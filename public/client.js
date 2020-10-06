@@ -1,0 +1,102 @@
+const $ = document.querySelector.bind(document)
+const $$ = document.querySelectorAll.bind(document)
+
+const init = () => {
+	const socket = io.connect()
+
+    setupMap(socket)
+	// addSocketListeners(socket)
+}
+
+const setupMap = socket => {
+    socket.on('setup', (map) => generateMaps(map, socket))
+    socket.on('hitAt', (pos) => markPosition(pos))
+    socket.on('confirmFireAt', (pos) => markPosition(pos))
+    socket.on('reset', () => resetGame())
+}
+
+const resetGame = () => {
+    $$('td').forEach(td => td.style.backgroundColor = 'white')
+    document.getElementById('board_player').innerHTML = ''
+    document.getElementById('board').innerHTML = ''
+}
+
+const markPosition = (result) => {
+    console.log(result.position)
+    result.position = result.position < 10 ? `0${result.position}` : `${result.position}`
+    if (result.enemy) {
+        document.getElementById(`${result.position}0`).style.backgroundColor = result.color
+    } else {
+        document.getElementById(result.position).style.backgroundColor = result.color
+    }
+
+
+}
+
+const generateMaps = (map, socket) => {
+    generatePlayerMap(map, socket)
+    generateOwnMap(map)
+}
+
+const generatePlayerMap = (map, socket) => {
+    const table = $('#board')
+    map.forEach((row, rowIndex) => {
+        newTr = document.createElement('tr')
+        map[0].split('').forEach((column, columnIndex) => {
+            newTr.appendChild(newCell(map, rowIndex, columnIndex))
+        })
+        table.appendChild(newTr)
+    })
+    addClickEventListeners(socket)
+}
+
+const generateOwnMap = (map) => {
+    const table = $('#board_player')
+    map.forEach((row, rowIndex) => {
+        newTr = document.createElement('tr')
+        map[0].split('').forEach((column, columnIndex) => {
+            newTr.appendChild(newCell(map, rowIndex, columnIndex, true))
+        })
+        table.appendChild(newTr)
+    })
+}
+
+const newCell = (map, rowIndex, columnIndex, player) => {
+    cell = document.createElement('td')
+    if (player) cell.innerText = map[rowIndex][columnIndex]
+    player ? cell.setAttribute('id',`${rowIndex}${columnIndex}0`) : cell.setAttribute('id',`${rowIndex}${columnIndex}`)
+    cell.setAttribute('class', 'points')
+    return cell
+}
+
+const getAllEnemyFields = () => $$('td')
+
+
+const addClickEventListeners = socket => {
+    getAllEnemyFields().forEach((cell, i) => {
+        if (!(`${cell.id}`.length > 2)) {
+            cell.addEventListener('click', () => {
+                // socket.emit('moveReq', i)
+                socket.emit('fire', i)
+            })
+        }
+	})
+}
+
+/*
+const addSocketListeners = socket => {
+	socket.on('message', setMessage)
+	socket.on('status', setStatus)
+	socket.on('moveRes', fillField)
+}
+*/
+/*
+const fillField = cells => {
+	cells.forEach((symbol, i) => {
+		const cell = getAllFields()[i]
+		cell.innerHTML = symbol
+	})
+}
+*/
+
+init()

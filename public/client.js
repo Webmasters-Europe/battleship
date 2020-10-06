@@ -5,7 +5,6 @@ const init = () => {
 	const socket = io.connect()
 
     setupMap(socket)
-	// addSocketListeners(socket)
 }
 
 const setupMap = socket => {
@@ -22,7 +21,6 @@ const resetGame = () => {
 }
 
 const markPosition = (result) => {
-    console.log(result.position)
     result.position = result.position < 10 ? `0${result.position}` : `${result.position}`
     if (result.enemy) {
         document.getElementById(`${result.position}0`).style.backgroundColor = result.color
@@ -76,27 +74,11 @@ const addClickEventListeners = socket => {
     getAllEnemyFields().forEach((cell, i) => {
         if (!(`${cell.id}`.length > 2)) {
             cell.addEventListener('click', () => {
-                // socket.emit('moveReq', i)
                 socket.emit('fire', i)
             })
         }
 	})
 }
 
-/*
-const addSocketListeners = socket => {
-	socket.on('message', setMessage)
-	socket.on('status', setStatus)
-	socket.on('moveRes', fillField)
-}
-*/
-/*
-const fillField = cells => {
-	cells.forEach((symbol, i) => {
-		const cell = getAllFields()[i]
-		cell.innerHTML = symbol
-	})
-}
-*/
 
 init()

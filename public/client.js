@@ -2,33 +2,34 @@ const $ = document.querySelector.bind(document)
 const $$ = document.querySelectorAll.bind(document)
 
 const init = () => {
-	const socket = io.connect()
+    const socket = io.connect()
 
     setupMap(socket)
 }
 
 const setupMap = socket => {
-    socket.on('setup', (map) => generateMaps(map, socket))
-    socket.on('hitAt', (pos) => markPosition(pos))
-    socket.on('confirmFireAt', (pos) => markPosition(pos))
+    socket.on('setup', map => generateMaps(map, socket))
+    socket.on('hitAt', pos => markPosition(pos))
+    socket.on('confirmFireAt', pos => markPosition(pos))
     socket.on('reset', () => resetGame())
 }
 
 const resetGame = () => {
-    $$('td').forEach(td => td.style.backgroundColor = 'white')
+    $$('td').forEach(td => (td.style.backgroundColor = 'white'))
     document.getElementById('board_player').innerHTML = ''
     document.getElementById('board').innerHTML = ''
 }
 
-const markPosition = (result) => {
-    result.position = result.position < 10 ? `0${result.position}` : `${result.position}`
+const markPosition = result => {
+    result.position =
+        result.position < 10 ? `0${result.position}` : `${result.position}`
     if (result.enemy) {
-        document.getElementById(`${result.position}0`).style.backgroundColor = result.color
+        document.getElementById(`${result.position}0`).style.backgroundColor =
+            result.color
     } else {
-        document.getElementById(result.position).style.backgroundColor = result.color
+        document.getElementById(result.position).style.backgroundColor =
+            result.color
     }
-
-
 }
 
 const generateMaps = (map, socket) => {
@@ -48,7 +49,7 @@ const generatePlayerMap = (map, socket) => {
     addClickEventListeners(socket)
 }
 
-const generateOwnMap = (map) => {
+const generateOwnMap = map => {
     const table = $('#board_player')
     map.forEach((row, rowIndex) => {
         newTr = document.createElement('tr')
@@ -62,13 +63,14 @@ const generateOwnMap = (map) => {
 const newCell = (map, rowIndex, columnIndex, player) => {
     cell = document.createElement('td')
     if (player) cell.innerText = map[rowIndex][columnIndex]
-    player ? cell.setAttribute('id',`${rowIndex}${columnIndex}0`) : cell.setAttribute('id',`${rowIndex}${columnIndex}`)
+    player
+        ? cell.setAttribute('id', `${rowIndex}${columnIndex}0`)
+        : cell.setAttribute('id', `${rowIndex}${columnIndex}`)
     cell.setAttribute('class', 'points')
     return cell
 }
 
 const getAllEnemyFields = () => $$('td')
-
 
 const addClickEventListeners = socket => {
     getAllEnemyFields().forEach((cell, i) => {
@@ -77,8 +79,7 @@ const addClickEventListeners = socket => {
                 socket.emit('fire', i)
             })
         }
-	})
+    })
 }
-
 
 init()

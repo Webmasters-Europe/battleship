@@ -1,65 +1,62 @@
 <!DOCTYPE html>
 <html lang="de">
-	<head>
-		<meta charset="utf-8" />
-		<title>Battleship</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <style>
-        .grid {
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            background: rgba(0,0,0,0);
-            margin-left: 30px;
-            font-size: 0;
-        }
-        .points {
-            position: relative;
-            width: 29px;
-            height: 29px;
-            border-top: 1px solid #8DEEEE;
-            border-right: 1px solid #8DEEEE;
-            display: inline-block;
-        }
-        .hole {
-            position: relative;
-            width: 10px;
-            height: 10px;
-            margin: 9px;
-            border: 1px solid #8DEEEE;
-            border-radius: 50%;
-            display: table;
-        }
-        #wrapper {
-            overflow: hidden;
-        }
-        #player {
-            float: left;
-        }
-        #enemy {
-            float: right;
-        }
-
-    </style>
+    <head>
+        <meta charset="utf-8" />
+        <title>Battleship</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <style>
+            .grid {
+                position: absolute;
+                width: 300px;
+                height: 300px;
+                background: rgba(0, 0, 0, 0);
+                margin-left: 30px;
+                font-size: 0;
+            }
+            .points {
+                position: relative;
+                width: 29px;
+                height: 29px;
+                border-top: 1px solid #8deeee;
+                border-right: 1px solid #8deeee;
+                display: inline-block;
+            }
+            .hole {
+                position: relative;
+                width: 10px;
+                height: 10px;
+                margin: 9px;
+                border: 1px solid #8deeee;
+                border-radius: 50%;
+                display: table;
+            }
+            #wrapper {
+                overflow: hidden;
+            }
+            #player {
+                float: left;
+            }
+            #enemy {
+                float: right;
+            }
+        </style>
     </head>
 
-	<body>
+    <body>
         <h1>Battleship</h1>
-        <div id='wrapper'>
-            <div id='player'>
-                <label for='board_player'> Your Battlefield </label>
-                <table id="board_player">
-                </table>
+        <div id="wrapper">
+            <div id="player">
+                <label for="board_player"> Your Battlefield </label>
+                <table id="board_player"></table>
             </div>
 
-            <div id='enemy'>
-                <label for='board'> Enemy Battlefield </label>
-                <table id="board">
-                </table>
+            <div id="enemy">
+                <label for="board"> Enemy Battlefield </label>
+                <table id="board"></table>
             </div>
         </div>
 
-		<script src="/socket.io/socket.io.js"></script>
-		<script type="text/javascript" src="./client.js" defer></script>
-	</body>
+        <script src="/socket.io/socket.io.js"></script>
+        <script type="text/javascript" src="./client.js" defer></script>
+    </body>
 </html>

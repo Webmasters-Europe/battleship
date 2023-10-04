@@ -1,85 +1,96 @@
-const $ = document.querySelector.bind(document)
-const $$ = document.querySelectorAll.bind(document)
+// Refactored code for improved readability and maintainability.
+// Used consistent variable declaration (const/let) throughout the code.
+
+const $ = document.querySelector.bind(document);
+const $$ = document.querySelectorAll.bind(document);
 
 const init = () => {
-    const socket = io.connect()
+    // Established a WebSocket connection.
+    const socket = io.connect();
+    setupMap(socket);
+};
 
-    setupMap(socket)
-}
-
-const setupMap = socket => {
-    socket.on('setup', map => generateMaps(map, socket))
-    socket.on('hitAt', pos => markPosition(pos))
-    socket.on('confirmFireAt', pos => markPosition(pos))
-    socket.on('reset', () => resetGame())
-}
+const setupMap = (socket) => {
+    // Improved event handling and function naming.
+    socket.on('setup', (map) => generateMaps(map, socket));
+    socket.on('hitAt', (pos) => markPosition(pos));
+    socket.on('confirmFireAt', (pos) => markPosition(pos));
+    socket.on('reset', resetGame);
+};
 
 const resetGame = () => {
-    $$('td').forEach(td => (td.style.backgroundColor = 'white'))
-    document.getElementById('board_player').innerHTML = ''
-    document.getElementById('board').innerHTML = ''
-}
+    // Reorganized code for resetting the game board.
+    clearBoard($('#board'));
+    clearBoard($('#board_player'));
+};
 
-const markPosition = result => {
-    result.position =
-        result.position < 10 ? `0${result.position}` : `${result.position}`
-    if (result.enemy) {
-        document.getElementById(`${result.position}0`).style.backgroundColor =
-            result.color
-    } else {
-        document.getElementById(result.position).style.backgroundColor =
-            result.color
+const clearBoard = (boardElement) => {
+    // Abstracted the logic for clearing the game board.
+    boardElement.innerHTML = '';
+};
+
+const markPosition = (result) => {
+    // Enhanced code for marking positions on the board.
+    const position = result.position < 10 ? `0${result.position}` : `${result.position}`;
+    const targetId = result.enemy ? `${position}0` : position;
+    const cell = document.getElementById(targetId);
+    if (cell) {
+        cell.style.backgroundColor = result.color;
     }
-}
+};
 
 const generateMaps = (map, socket) => {
-    generatePlayerMap(map, socket)
-    generateOwnMap(map)
-}
+    // Improved function for generating player and own maps.
+    generatePlayerMap(map, socket);
+    generateOwnMap(map);
+};
 
 const generatePlayerMap = (map, socket) => {
-    const table = $('#board')
-    map.forEach((row, rowIndex) => {
-        newTr = document.createElement('tr')
-        map[0].split('').forEach((column, columnIndex) => {
-            newTr.appendChild(newCell(map, rowIndex, columnIndex))
-        })
-        table.appendChild(newTr)
-    })
-    addClickEventListeners(socket)
-}
+    // Enhanced code for generating the player's map.
+    const table = $('#board');
+    generateTable(table, map, false);
+    addClickEventListeners(socket);
+};
 
-const generateOwnMap = map => {
-    const table = $('#board_player')
+const generateOwnMap = (map) => {
+    // Enhanced code for generating the own map.
+    const table = $('#board_player');
+    generateTable(table, map, true);
+};
+
+const generateTable = (table, map, player) => {
+    // Abstracted the logic for generating the game board table.
     map.forEach((row, rowIndex) => {
-        newTr = document.createElement('tr')
+        const newRow = document.createElement('tr');
         map[0].split('').forEach((column, columnIndex) => {
-            newTr.appendChild(newCell(map, rowIndex, columnIndex, true))
-        })
-        table.appendChild(newTr)
-    })
-}
+            newRow.appendChild(newCell(map, rowIndex, columnIndex, player));
+        });
+        table.appendChild(newRow);
+    });
+};
 
 const newCell = (map, rowIndex, columnIndex, player) => {
-    cell = document.createElement('td')
-    if (player) cell.innerText = map[rowIndex][columnIndex]
-    player
-        ? cell.setAttribute('id', `${rowIndex}${columnIndex}0`)
-        : cell.setAttribute('id', `${rowIndex}${columnIndex}`)
-    cell.setAttribute('class', 'points')
-    return cell
-}
+    // Refactored code for creating table cells.
+    const cell = document.createElement('td');
+    if (player) {
+        cell.innerText = map[rowIndex][columnIndex];
+    }
+    const id = player ? `${rowIndex}${columnIndex}0` : `${rowIndex}${columnIndex}`;
+    cell.setAttribute('id', id);
+    cell.setAttribute('class', 'points');
+    return cell;
+};
 
-const getAllEnemyFields = () => $$('td')
+const getAllEnemyFields = () => $$('.points:not([id$="0"])');
 
-const addClickEventListeners = socket => {
-    getAllEnemyFields().forEach((cell, i) => {
-        if (!(`${cell.id}`.length > 2)) {
-            cell.addEventListener('click', () => {
-                socket.emit('fire', i)
-            })
-        }
-    })
-}
+const addClickEventListeners = (socket) => {
+    // Enhanced code for adding click event listeners.
+    const enemyFields = getAllEnemyFields();
+    enemyFields.forEach((cell, i) => {
+        cell.addEventListener('click', () => {
+            socket.emit('fire', i);
+        });
+    });
+};
 
-init()
+init();
